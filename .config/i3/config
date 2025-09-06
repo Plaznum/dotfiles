@@ -1,0 +1,411 @@
+# ------------------------------------ #
+# pandy! ~/.config/i3/config           #
+# ------------------------------------ #
+# https://i3wm.org/docs/userguide.html #
+# ------------------------------------ #
+# * i3lock conf
+#       # sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+#       # sudo apt install alacritty blueman feh i3 i3blocks ibus ibus-mozc maim pasystray pavucontrol picom playerctl rofi thunar xclip xfce4-terminal 
+# * ~/.config/rofi/config.rasi
+# * ~/.local/share/rofi/themes/jojess.rasi
+# * ~/.i3status.conf
+# * ~/.config/i3/*
+# ------------------------------------ #
+# xmodmap -pke
+# xmodmap -pm
+
+set $mod Mod4
+# alt
+set $mod1 Mod1
+# numlock
+set $mod2 Mod2
+
+set $term "alacritty -e tmux"
+set $termuwu alacritty
+set $fileguiuwu thunar
+
+# backgrounds
+set $bg3 /home/pandy/Pictures/20250624_160756.jpg
+set $bg2 /home/pandy/Pictures/wallpaper/wallhaven-lmq522.jpg
+set $bg  /home/pandy/Pictures/20250624_160813.jpg
+
+
+# BORDERS
+set $bg-color 	         #5fd7ff
+#set $inactive-bg-color   #655866
+set $inactive-bg-color   #004557
+#set $text-color          #1f0121
+set $text-color          #302d30
+set $inactive-text-color #a1c9cc
+set $urgent-bg-color     #E53935
+set $indicator		 #0000ff
+
+# polybar instead of i3blocks
+#exec_always --no-startup-id /home/pandy/.config/polybar/launch.sh
+# compositor, for app transparency and shit
+#exec_always --no-startup-id "picom --blur-background --backend xrender --corner-radius=5"
+exec_always --no-startup-id "picom --config .config/i3/picom.conf"
+#exec_always --no-startup-id "picom --corner-radius=5 --backend glx --vsync"
+
+# turning off screen sleep
+exec --no-startup-id xset s off -dpms
+
+#------------------#
+# 0: HDMI-0 - LG  #
+# 1: DVI-D-0 - BenQ #
+# 2: DP-0 - Victek #
+#------------------#
+exec --no-startup-id xrandr --output HDMI-0 --mode 1920x1080 --pos 0x0 --primary && xrandr --output DVI-D-0 --right-of HDMI-0 --pos 1920x600 && xrandr --output DP-0 --pos -1080x-900 --rotate right
+workspace 3 output DVI-D-0
+workspace 2 output HDMI-0
+workspace 1 output DP-0
+
+# window colors
+#                       border              background         text                 indicator
+client.focused          $bg-color           $bg-color          $text-color          $indicator
+client.unfocused        $inactive-bg-color  $inactive-bg-color $inactive-text-color $indicator
+client.focused_inactive $inactive-bg-color  $inactive-bg-color $inactive-text-color $indicator
+client.urgent           $urgent-bg-color    $urgent-bg-color   $text-color          $indicator
+
+default_border		 pixel 3 
+default_floating_border  pixel 3
+for_window [instance = "__focused__"] border pixel 3
+
+# some hyprland lookin garbage
+gaps inner 2
+gaps outer 3
+gaps bottom 2
+gaps horizontal 5
+gaps vertical 5
+
+font pango:Mononoki Nerd Font Regular 8
+
+# Start XDG autostart .desktop files using dex. See also
+exec --no-startup-id dex --autostart --environment i3
+
+# xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
+# screen before suspend. Use loginctl lock-session to lock your screen.
+exec --no-startup-id xss-lock --transfer-sleep-lock -- "i3lock -i /home/pandy/Pictures/wallpaper/i90bLZFzoz1Ho.png" --nofork
+
+exec --no-startup-id nm-applet
+exec --no-startup-id blueman-applet
+exec --no-startup-id ibus-daemon -r -d
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------------#
+# 	~feh wallpaper optionnnnssssss~                                                                                                               #
+# --bg-fill	preserves aspect and zooms. cuts off either horizontal or vertical parts. each monitor gets an image each.                            #
+# --bg-max	scales image to max size while maintianing aspect ratio. has boarders. each monitor gets an image each.                               #
+# --bg-scale	fit into background. stretch/shrink to fit, aspect lost. each monitor gets an image each.                                             #
+# --bg-tile	repeat image if image is too small. goes across all monitors.                                                                         #
+#                                                                                                                                                     #
+# For center, fill, and max, you can use --geometry to specify an offset from one side of the monitor instead of centering the image.                 #
+# Positive values will offset from the left/top side, negative values from the bottom/right. +0 and -0 are both valid and distinct values.            # 
+#                                                                                                                                                     # 
+# Note that all options except --bg-tile support Xinerama.                                                                                            # 
+# For instance, if you have multiple monitors connected and use e.g. --bg-center, feh will center or appropriately offset the image on each monitor.  #
+# You may even specify more than one file, in that case, the first file is set on monitor 0, the second on monitor 1, and so on.                      #
+# Use xrandr --listmonitors to determine how Xinerama monitor IDs map to screens / monitors in your setup.                                            #
+#                                                                                                                                                     #
+# Use --no-xinerama to treat the whole X display as one monitor when setting wallpapers.                                                              #
+# You  may also use --xinerama-index to use feh as a background setter for a specific monitor.                                                        #
+#                                                                                                                                                     #
+#-----------------------------------------------------------------------------------------------------------------------------------------------------#
+#exec_always --no-startup-id "sleep 2 && feh --bg-fill $bg"
+exec_always --no-startup-id "sleep 2 && feh --bg-fill $bg $bg2 $bg3"
+
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# GMK87 : F[5678] =  ( Stop,Prev,Play,Next ) ... Remap:
+bindsym XF86AudioStop exec --no-startup-id playerctl play-pause
+#bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+#bindsym XF86AudioPlay exec --no-startup-id playerctl next
+#bindsym XF86AudioNext exec --no-startup-id playerctl status
+
+# Use Mouse+$mod to drag floating windows to their wanted position
+floating_modifier $mod
+
+# move tiling windows via drag & drop by left-clicking into the title bar,
+# or left-clicking anywhere into the window while holding the floating modifier.
+tiling_drag modifier titlebar
+
+bindsym $mod+Return exec $termuwu
+bindsym $mod+F9 exec $termuwu
+
+# kill focused window
+bindsym $mod+q kill
+bindsym $mod+Shift+q kill
+
+bindsym $mod+n exec $fileguiuwu
+
+# JOJESSCONF: .config/rofi/config.rasi
+#   /usr/share/rofi/themes; ~/.local/share/rofi/themes
+#   rofi-theme-selector
+# UWU 
+bindsym $mod+w exec rofi -show window
+bindsym $mod+d exec rofi -show run
+bindsym $mod+Shift+d exec rofi -show ssh
+#bindsym $mod+d exec rofi -show run -lines 3 -eh 2 -width 100 -padding 800 -opacity "85" -bw 0 -bc "$bg-color" -bg "$bg-color" -fg "$text-color" -hlbg "$bg-color" -hlfg "#9575cd" -font "DepartureMono Nerd Font Regular 18"
+
+bindsym $mod+Shift+x exec i3lock -i /home/pandy/Pictures/wallpaper/i90bLZFzoz1Ho.png
+
+# change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+# move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+# alternatively, you can use the cursor keys:
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# split in horizontal orientation
+bindsym $mod+semicolon split h
+# split in vertical orientation
+bindsym $mod+apostrophe split v
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+#bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+# focus the parent container
+bindsym $mod+a focus parent
+# focus the child container
+#bindsym $mod+d focus child
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+# exit i3 (logs you out of your X session)
+# Note that if xfce manages your session instead of i3: exiting i3 will blank your screen but not terminate your session.
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'owo U pressd da exit shortcut!! Do u rly wanna exit i3? Dis will end your X session. uwu' -B 'Yes, exit i3' 'i3-msg exit'"
+#bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'OwO U pressd da exit shortcut!! Do u rly wanna exit i3? Dis will end your X session. uwu' -B 'Yes, exit i3' 'xfce4-session-logout'"
+#bindsym $mod+Shift+e exec "xfce4-session-logout"
+
+# Define names for default workspaces for which we configure key bindings later on.
+# We use variables to avoid repeating the names in multiple places.
+# ? mod+1 
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+# ! mod+alt+1
+set $ws11 "11"
+set $ws12 "12"
+set $ws13 "13"
+set $ws14 "14"
+set $ws15 "15"
+set $ws16 "16"
+set $ws17 "17"
+set $ws18 "18"
+set $ws19 "19"
+set $ws20 "20"
+
+# switch to workspace
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+# ! 
+bindsym $mod+$mod1+1 workspace number $ws11
+bindsym $mod+$mod1+2 workspace number $ws12
+bindsym $mod+$mod1+3 workspace number $ws13
+bindsym $mod+$mod1+4 workspace number $ws14
+bindsym $mod+$mod1+5 workspace number $ws15
+bindsym $mod+$mod1+6 workspace number $ws16
+bindsym $mod+$mod1+7 workspace number $ws17
+bindsym $mod+$mod1+8 workspace number $ws18
+bindsym $mod+$mod1+9 workspace number $ws19
+bindsym $mod+$mod1+0 workspace number $ws20
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+# !
+bindsym $mod+$mod1+Shift+1 move container to workspace number $ws11
+bindsym $mod+$mod1+Shift+2 move container to workspace number $ws12
+bindsym $mod+$mod1+Shift+3 move container to workspace number $ws13
+bindsym $mod+$mod1+Shift+4 move container to workspace number $ws14
+bindsym $mod+$mod1+Shift+5 move container to workspace number $ws15
+bindsym $mod+$mod1+Shift+6 move container to workspace number $ws16
+bindsym $mod+$mod1+Shift+7 move container to workspace number $ws17
+bindsym $mod+$mod1+Shift+8 move container to workspace number $ws18
+bindsym $mod+$mod1+Shift+9 move container to workspace number $ws19
+bindsym $mod+$mod1+Shift+0 move container to workspace number $ws20
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        # These bindings trigger as soon as you enter the resize mode
+
+        # Pressing left will shrink the window’s width.
+        # Pressing right will grow the window’s width.
+        # Pressing up will shrink the window’s height.
+        # Pressing down will grow the window’s height.
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
+
+        # same bindings, but for the arrow keys
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        # back to normal: Enter or Escape or $mod+r
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode "resize"
+# bindsys Print exec maim -s | xclip -selection clipboard -t image/png
+# ndsys Print exec main -s | xclip -selection clipboard -t image/png 
+
+#bindsym Print exec maim -s | xclip -selection clipboard -t image/png; xclip -selection clipboard -o > ~/Pictures/maim.`date "+%Y%m%d.%H%M%S.%N.%s"`.png
+# bindsym Print exec scapscap
+# maim -s | xclip -selection clipboard -t image/png; xclip -selection clipboard -o > ~/Pictures/maim.`date "+%Y%m%d.%H%M%S.%N.%s"`.png
+
+bindsym $mod+Shift+s exec ~/.config/i3/scapscap
+bindsym $mod+Print exec ~/.config/i3/scapscap
+bindsym Print exec ~/.config/i3/scap 
+
+# jojess ibus >> these ...  seem to work for mod1/L_ALT+space, on senzai;  but work as expected on myou?  wtf haha >> JP 
+#bindsym $mod+space exec ~/.config/i3/ibustoggle
+bindsym $mod+$mod1+space exec ~/.config/i3/ibustoggle
+bindsym $mod+$mod2+space exec ~/.config/i3/ibustoggle
+bindsym $mod1+$mod2+space exec ~/.config/i3/ibustoggle
+
+# < ~ < ~ pandy workspaces ~ > ~ >
+workspace 1 output DP-0 # left
+workspace 10 output DP-0 # left 
+workspace 11 output DP-0 # left
+workspace 12 output DP-0 # left
+workspace 19 output DP-0 # left 
+workspace 20 output DP-0 # left 
+workspace 2 output HDMI-0 # center
+workspace 4 output HDMI-0 # center
+workspace 7 output HDMI-0 # center
+workspace 9 output HDMI-0 # center
+workspace 3 output DVI-D-0 # right
+workspace 5 output DVI-D-0 # right
+workspace 6 output DVI-D-0 # right
+workspace 8 output DVI-D-0 # right
+
+ 
+# L - 1/firefox 
+# workspace 1 output DP-1 # left
+# exec --no-startup-id i3-msg 'workspace $ws1; exec firefox;'
+
+# C - 3/code 
+# 
+# Workspace 3 output DVI-D-0 # center
+# Exec --no-startup-id i3-msg 'workspace $ws3; exec code;'
+# 
+# # C - 5/chrome 
+# Workspace 5 output DVI-D-0 # center
+# #exec --no-startup-id i3-msg 'workspace $ws5; exec chromium;'
+# Exec --no-startup-id i3-msg 'workspace $ws5; exec unimail;'
+# 
+# # C - 2 term
+# Workspace 2 output DVI-D-0 # center
+# Exec --no-startup-id i3-msg 'workspace $ws2; exec $termuwu;'
+# 
+# # R - 10 slack 
+# Workspace 10 output DVI-D-0 # right
+# Exec --no-startup-id i3-msg 'workspace $ws10; exec slack;'
+# 
+# # R - 20 discord
+# Workspace 20 output DVI-D-0 # right
+# Exec --no-startup-id i3-msg 'workspace $ws20; exec discord;'
+# 
+# # R - 19 spotify
+# Workspace 19 output DVI-D-0 # right
+# Exec --no-startup-id i3-msg 'workspace $ws19; exec spotify;'
+# 
+
+#exec --no-startup-id i3-msg "workspace $ws2; exec firefox; move container to workspace number $ws1; workspace $ws2"
+#exec --no-startup-id i3-msg "exec slack; move container to workspace number $ws10"
+#workspace 2 output DVI-D-0 # center
+#exec --no-startup-id i3-msg "workspace $ws2; exec discord; move container to workspace number $ws20; workspace $ws2"
+
+#assign [class="firefox"] $ws1
+#assign [class="chromium"] $ws5
+assign [class="teams-for-linux"] $ws7
+assign [class="slack"] $ws10
+assign [class="Slack"] $ws10
+assign [class="Spotify"] $ws19
+assign [class="Spotify"] $ws19
+assign [class="discord"] $ws20
+assign [class="Discord"] $ws20
+#exec --no-startup-id i3-msg 'workspace $ws1; exec firefox; workspace $ws20; exec echo "discord"; workspace $ws19; exec spotify'
+exec --no-startup-id i3-msg 'workspace $ws2; exec $term; workspace $ws19; exec spotify'
+exec_always --no-startup-id gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+exec_always --no-startup-id gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
+
+
+# Start i3bar to display a workspace bar (plus the system information i3status
+# finds out, if available)
+bar {
+	i3bar_command i3bar --transparency
+        status_command i3status
+        #status_command i3blocks
+        tray_output primary
+        tray_padding 5
+        workspace_min_width 10
+
+	colors {
+		#background $bg-color
+		background #00000000
+	    	separator #757575
+		#                   border             background         text	
+		#focused_workspace   $bg-color          $bg-color          $text-color
+		focused_workspace   $inactive-bg-color $bg-color          $text-color
+		inactive_workspace    $inactive-bg-color $inactive-bg-color $inactive-text-color
+		active_workspace  $inactive-bg-color $indicator 	  $inactive-text-color
+		urgent_workspace    $urgent-bg-color   $urgent-bg-color   $text-color
+	}
+	padding 2 10 4
+}
+
+# thank you, Jojess
